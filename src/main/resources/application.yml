@@ -1,0 +1,10 @@
+zuul : 
+  routes : 
+    book : 
+      path : /demo/**
+      url : http://10.103.48.190
+ribbon : 
+  eureka : 
+    enabled : false  
+server :
+  port : 10000
