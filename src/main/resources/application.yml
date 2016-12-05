@@ -1,10 +1,13 @@
 zuul : 
   routes : 
-    book : 
-      path : /demo/**
-      url : http://10.103.48.190
+    passport : 
+      path : /passport/**
+      url : http://127.0.0.1:8088
 ribbon : 
   eureka : 
     enabled : false  
 server :
   port : 10000
+ocs :
+  routes :
+    - /passport/login

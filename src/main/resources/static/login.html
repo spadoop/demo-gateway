@@ -3,8 +3,23 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Login Page</title>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#loginBtn').click(function(){
+		$.ajax({
+			url:'/passport/login',
+			dataType:'json',
+			data:{"userName":$('#name').val(),"password":$('#password').val()},
+			success:function(result){
+				console.log(result);
+			}
+		});
+	});
+});
+</script>
 </head>
 <body>
-
+<div>Name:<input type="text" id="name"/> Password:<input type="password" id="password"/> <input type="button" value="Login" id="loginBtn"/></div>
 </body>
 </html>
