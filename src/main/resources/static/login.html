@@ -2,8 +2,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Login Page</title>
+<title>用户登录</title>
+<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
 <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#loginBtn').click(function(){
@@ -20,6 +22,24 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<div>Name:<input type="text" id="name"/> Password:<input type="password" id="password"/> <input type="button" value="Login" id="loginBtn"/></div>
+<br/><br/><br/><br/>
+<div class="panel panel-primary" style="width:500px;margin:0 auto;">
+	<div class="panel-heading">用户登录</div>
+	<div class="panel-body">
+		<div>
+			<div class="input-group" style="margin-bottom: 25px">
+			  <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+			  <input type="text" class="form-control" id="name" placeholder="请输入用户名">
+			</div>
+			<div class="input-group" style="margin-bottom: 25px">
+			  <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+			  <input type="text" class="form-control" id="password" placeholder="请输入密码">
+			</div>
+			<div class="col-sm-12 controls">
+		      <a id="loginBtn" href="javascript:void(0);" class="btn btn-success">Login  </a>
+		    </div>
+		</div>
+	</div>
+</div>
 </body>
 </html>
