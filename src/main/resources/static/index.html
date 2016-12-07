@@ -4,8 +4,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>OCS商城</title>
 <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="bootstrap/table/bootstrap-table.min.css"/>
 <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="bootstrap/table/bootstrap-table.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$.ajax({
@@ -23,7 +25,43 @@ $(document).ready(function(){
 			}
 		}
 	});
+	
+	$('table').bootstrapTable({
+		url:'/product/list',
+		dataField: "data",
+		pageList: [5, 10, 20, 50],
+		dataType: "json",
+		columns: [
+            {
+                title: "商品名称",//标题
+                field: "proName"//键名
+                //sortable: true,//是否可排序
+                //order: "desc"//默认排序方式
+            },
+            {
+                field: "amount",
+                title: "商品数量",
+                sortable: true
+                //titleTooltip: "this is name"
+            },
+            {
+                field: "price",
+                title: "商品价格",
+                sortable: true
+            },
+            {
+                field: "id",
+                title: "操作",
+                formatter: 'infoFormatter',//对本列数据做格式化
+            }
+        ],
+        locale: "zh-CN"
+	});
 });
+
+function infoFormatter(value, row, index){
+    return '<span class="btn btn-primary btn-xs">购买</span>';
+}
 </script>
 </head>
 <body>
