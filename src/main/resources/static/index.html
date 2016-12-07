@@ -8,7 +8,21 @@
 <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-	
+	$.ajax({
+		url:'/product/list',
+		success:function(result){
+			if(result.code==200){
+				$.each(result.data,function(i,o){
+					$('.panel-body table tbody').append('<tr>')
+						.append('<td>' + o.proName + '</td>')
+						.append('<td>' + o.amount + '</td>')
+						.append('<td>' + o.price + '</td>')
+						.append('<td><span class="btn btn-primary btn-xs">购买</span></td>')
+						.append('</tr>');
+				});
+			}
+		}
+	});
 });
 </script>
 </head>
@@ -37,7 +51,7 @@ $(document).ready(function(){
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
+					<!-- <tr>
 						<td>Iphone 7</td>
 						<td>1000</td>
 						<td>7000.00</td>
@@ -66,7 +80,7 @@ $(document).ready(function(){
 						<td>1000</td>
 						<td>3000.00</td>
 						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr>
+					</tr> -->
 				</tbody>
 			</table>
 		</div>

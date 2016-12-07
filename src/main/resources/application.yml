@@ -3,6 +3,9 @@ zuul :
     passport : 
       path : /passport/**
       url : http://127.0.0.1:8088
+    product : 
+      path : /product/**
+      url : http://127.0.0.1:9090
 ribbon : 
   eureka : 
     enabled : false  
@@ -11,3 +14,4 @@ server :
 ocs :
   routes :
     - /passport/login
+    - /product/
