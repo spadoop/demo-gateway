@@ -19,7 +19,7 @@ $(document).ready(function(){
 						.append('<td>' + o.proName + '</td>')
 						.append('<td>' + o.amount + '</td>')
 						.append('<td>' + o.price + '</td>')
-						.append('<td><span class="btn btn-primary btn-xs">购买</span></td>')
+						.append('<td><span class="btn btn-primary btn-xs" onclick="buy(' + o.id + ')">购买</span></td>')
 						.append('</tr>');
 				});
 			}
@@ -60,7 +60,23 @@ $(document).ready(function(){
 });
 
 function infoFormatter(value, row, index){
-    return '<span class="btn btn-primary btn-xs">购买</span>';
+	console.log(value,row,index);
+    return '<span class="btn btn-primary btn-xs" onclick="buy(\'' + value + '\')">购买</span>';
+}
+
+function buy(pid){
+	console.log(pid);
+	$.ajax({
+		url:'/order/neworder',
+		data:{"productId":pid},
+		dataType:'json',
+		method:'post',
+		success:function(result){
+			if(result.code==200){
+				window.location.href = "/order.html";
+			}
+		}
+	});
 }
 </script>
 </head>
