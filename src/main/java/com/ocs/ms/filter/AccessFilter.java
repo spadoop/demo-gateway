@@ -28,6 +28,7 @@ public class AccessFilter extends ZuulFilter{
         
         List<String> routeTable = rc.getRoutes();
         for(String rt : routeTable){
+        	System.out.println("routeTable="+rt);
         	if(request.getRequestURL().indexOf(rt)>=0){
         		return null;
         	}

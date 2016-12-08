@@ -10,11 +10,13 @@
 $(document).ready(function(){
 	$('#loginBtn').click(function(){
 		$.ajax({
-			url:'/passport/login',
+			url:'/passport/login/findBy_username_passwd',
 			dataType:'json',
-			data:{"userName":$('#name').val(),"password":$('#password').val()},
+			data:{"username":$('#name').val(),"passwd":$('#password').val()},
 			success:function(result){
-				console.log(result);
+				if(result.code==200){
+					window.location.href="/index.html"
+				}
 			}
 		});
 	});
