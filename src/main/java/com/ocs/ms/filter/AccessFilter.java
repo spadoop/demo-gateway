@@ -28,12 +28,18 @@ public class AccessFilter extends ZuulFilter{
         
         List<String> routeTable = rc.getRoutes();
         for(String rt : routeTable){
+        	System.out.println("routeTable="+rt);
         	if(request.getRequestURL().indexOf(rt)>=0){
         		return null;
         	}
         }
         
-        UserSession us = LoginManager.getUserSession(request);
+        UserSession us = null;
+		try {
+			us = LoginManager.getUserSession(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
         System.out.println(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
         if(Assert.isBlank(us)){
