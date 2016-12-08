@@ -9,23 +9,33 @@
 <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="bootstrap/table/bootstrap-table.min.js"></script>
 <script type="text/javascript">
+var is_login = false;
 $(document).ready(function(){
+	//用户信息
 	$.ajax({
-		url:'/product/list',
+		url:'/passport/getuser',
+		async: false,
 		success:function(result){
 			if(result.code==200){
-				$.each(result.data,function(i,o){
-					$('.panel-body table tbody').append('<tr>')
-						.append('<td>' + o.proName + '</td>')
-						.append('<td>' + o.amount + '</td>')
-						.append('<td>' + o.price + '</td>')
-						.append('<td><span class="btn btn-primary btn-xs" onclick="buy(' + o.id + ')">购买</span></td>')
-						.append('</tr>');
-				});
+				$('#userName').html(result.data.displayname);
+				is_login = true;
+			}
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			if(XMLHttpRequest.status == 400){
+				$('#userName').html('未登录');
+				$('.btn-group .dropdown-menu').hide();
 			}
 		}
 	});
-	
+	$('#logout').click(function(){
+		$.ajax({
+			url:'/passport/logout',
+			success:function(result){
+				window.location.href = '/login.html';
+			}
+		});
+	});
 	$('table').bootstrapTable({
 		url:'/product/list',
 		dataField: "data",
@@ -55,17 +65,24 @@ $(document).ready(function(){
                 formatter: 'infoFormatter',//对本列数据做格式化
             }
         ],
-        locale: "zh-CN"
+        locale: "zh-CN",
+        responseHandler:function(res){
+        	if(res.code==200)
+        		return res;
+        	else
+        		return null;
+        }
 	});
 });
 
 function infoFormatter(value, row, index){
-	console.log(value,row,index);
-    return '<span class="btn btn-primary btn-xs" onclick="buy(\'' + value + '\')">购买</span>';
+	if(is_login)
+    	return '<span class="btn btn-primary btn-xs" onclick="buy(\'' + value + '\')">购买</span>';
+    else
+    	return '<a href="/login.html">请先登录</a>';
 }
 
 function buy(pid){
-	console.log(pid);
 	$.ajax({
 		url:'/order/neworder',
 		data:{"productId":pid},
@@ -83,11 +100,21 @@ function buy(pid){
 <body>
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-    <div class="navbar-header">
+    <div class="navbar-header col-md-10">
       <a class="navbar-brand" href="#">
         OCS商城
       </a>
     </div>
+    
+	    <!-- Single button -->
+		<div class="btn-group col-md-2" style="padding-top:8px;">
+		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    <span id="userName">Action</span> <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu">
+		    <li><a href="javascript:void(0);" id="logout">退出</a></li>
+		  </ul>
+		</div>
   </div>
 </nav>
 <div style="padding:2px">
