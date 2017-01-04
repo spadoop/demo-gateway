@@ -28,7 +28,7 @@ public class AccessFilter extends ZuulFilter{
         
         List<String> routeTable = rc.getRoutes();
         for(String rt : routeTable){
-        	System.out.println("routeTable="+rt);
+//        	System.out.println("routeTable="+rt);
         	if(request.getRequestURL().indexOf(rt)>=0){
         		return null;
         	}
@@ -41,7 +41,7 @@ public class AccessFilter extends ZuulFilter{
 			e.printStackTrace();
 		}
 
-        System.out.println(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+//        System.out.println(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
         if(Assert.isBlank(us)){
         	ctx.setSendZuulResponse(false);
         	ctx.setResponseStatusCode(ResultCode.NOT_LOGIN.val());

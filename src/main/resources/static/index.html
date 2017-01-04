@@ -2,172 +2,597 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>OCS商城</title>
+<title>教务微服务DEMO</title>
 <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="bootstrap/switch/css/bootstrap3/bootstrap-switch.min.css"/>
 <link rel="stylesheet" href="bootstrap/table/bootstrap-table.min.css"/>
-<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
-<script type="text/javascript" src="bootstrap/table/bootstrap-table.min.js"></script>
-<script type="text/javascript">
-var is_login = false;
-$(document).ready(function(){
-	//用户信息
-	$.ajax({
-		url:'/passport/getuser',
-		async: false,
-		success:function(result){
-			if(result.code==200){
-				$('#userName').html(result.data.displayname);
-				is_login = true;
-			}
-		},
-		error:function(XMLHttpRequest, textStatus, errorThrown){
-			if(XMLHttpRequest.status == 400){
-				$('#userName').html('未登录');
-				$('.btn-group .dropdown-menu').hide();
-			}
-		}
-	});
-	$('#logout').click(function(){
-		$.ajax({
-			url:'/passport/logout',
-			success:function(result){
-				window.location.href = '/login.html';
-			}
-		});
-	});
-	$('table').bootstrapTable({
-		url:'/product/list',
-		dataField: "data",
-		pageList: [5, 10, 20, 50],
-		dataType: "json",
-		columns: [
-            {
-                title: "商品名称",//标题
-                field: "proName"//键名
-                //sortable: true,//是否可排序
-                //order: "desc"//默认排序方式
-            },
-            {
-                field: "amount",
-                title: "商品数量",
-                sortable: true
-                //titleTooltip: "this is name"
-            },
-            {
-                field: "price",
-                title: "商品价格",
-                sortable: true
-            },
-            {
-                field: "id",
-                title: "操作",
-                formatter: 'infoFormatter',//对本列数据做格式化
-            }
-        ],
-        locale: "zh-CN",
-        responseHandler:function(res){
-        	if(res.code==200)
-        		return res;
-        	else
-        		return null;
-        }
-	});
-});
-
-function infoFormatter(value, row, index){
-	if(is_login)
-    	return '<span class="btn btn-primary btn-xs" onclick="buy(\'' + value + '\')">购买</span>';
-    else
-    	return '<a href="/login.html">请先登录</a>';
-}
-
-function buy(pid){
-	$.ajax({
-		url:'/order/neworder',
-		data:{"productId":pid},
-		dataType:'json',
-		method:'post',
-		success:function(result){
-			if(result.code==200){
-				window.location.href = "/order.html";
-			}
-		}
-	});
-}
-</script>
+<link rel="stylesheet" href="components/ztree/zTreeStyle/zTreeStyle.css"/>
+<link rel="stylesheet" type="text/css" href="components/tooltipster/css/tooltipster.bundle.min.css" />
+<link rel="stylesheet" href="components/tooltipster/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css"/>
+<style>
+.row-txt{text-align:right;line-height:34px;}
+.row-txt div span{color:red;line-height:34px;}
+.row{padding-bottom:5px;}
+.adv-search-hide{display:none;}
+.adv-search-show{display:block;}
+</style>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-  <div class="container-fluid">
-    <div class="navbar-header col-md-10">
-      <a class="navbar-brand" href="#">
-        OCS商城
-      </a>
-    </div>
-    
-	    <!-- Single button -->
-		<div class="btn-group col-md-2" style="padding-top:8px;">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    <span id="userName">Action</span> <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu">
-		    <li><a href="javascript:void(0);" id="logout">退出</a></li>
-		  </ul>
-		</div>
-  </div>
-</nav>
-<div style="padding:2px">
-<div class="panel panel-primary">
-	<div class="panel-heading">商品列表</div>
-	<div class="panel-body">
-		<div>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>商品名称</th>
-						<th>商品数量</th>
-						<th>商品价格</th>
-						<th>操作</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- <tr>
-						<td>Iphone 7</td>
-						<td>1000</td>
-						<td>7000.00</td>
-						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr>
-					<tr>
-						<td>Iphone 6</td>
-						<td>1000</td>
-						<td>6000.00</td>
-						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr>
-					<tr>
-						<td>Iphone 5</td>
-						<td>1000</td>
-						<td>5000.00</td>
-						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr>
-					<tr>
-						<td>Iphone 4</td>
-						<td>1000</td>
-						<td>4000.00</td>
-						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr>
-					<tr>
-						<td>Iphone 3</td>
-						<td>1000</td>
-						<td>3000.00</td>
-						<td><span class="btn btn-primary btn-xs">购买</span></td>
-					</tr> -->
-				</tbody>
-			</table>
-		</div>
-	</div>
+<nav id="header" class="navbar navbar-default navbar-static-top" role="navigation"></nav>
+<ol class="breadcrumb">
+  <li><a href="#">教务微服务DEMO</a></li>
+  <li><a href="#">课程资源管理</a></li>
+  <li class="active">课程基本信息</li>
+</ol>
+<div class="col-md-2">
+<ul id="treeDemo" class="ztree"></ul>
 </div>
+<div class="col-md-10">
+	<div class="panel panel-default">
+	  <div class="panel-body search-body">
+	  	<div class="row">
+		    <div class="col-xs-1"><strong><span class="label label-info">查询条件</span></strong> 
+		    </div>
+		    <div class="col-xs-1 row-txt">课程号：</div>
+		    <div class="col-xs-2"><input class="form-control" name="courseNum"/></div>
+		    <div class="col-xs-1 row-txt">学分：</div>
+		    <div class="col-xs-2"><input class="form-control" name="credit"/></div>
+		    <div class="col-xs-1 row-txt" >总学时：</div>
+		    <div class="col-xs-2"><input class="form-control" name="period_total"/></div>
+		    <div class="col-xs-2" style="padding-top:4px;">
+		    	<button class="btn btn-default" title="搜索" id="searchBtn"><span class="glyphicon glyphicon-search"></span></button>
+		    	<button id="adv-search" class="btn btn-default" title="高级搜索"><span class="glyphicon glyphicon-menu-down"></span></button>
+		    </div>
+		</div>
+	  	<div class="row adv-search-hide">
+		    <div class="col-xs-2 row-txt">课程大类：</div>
+		    <div class="col-xs-2">
+		    	<select class="form-control" name="courseClass">
+		    		<option value="">所有</option>
+		    		<option value="公共必修课">公共必修课</option>
+		    		<option value="专业必修课">专业必修课</option>
+		    		<option value="公共选修课">公共选修课</option>
+		    		<option value="专业选修课">专业选修课</option>
+		    	</select>
+		    </div>
+		    <div class="col-xs-2 row-txt">开课单位：</div>
+		    <div class="col-xs-2">
+		    	<select class="form-control" name="courceDepartmentID" id="scourseunit"></select>
+		    </div>
+		    <div class="col-xs-2 row-txt" >是否在用：</div>
+		    <div class="col-xs-2" style="padding-top:6px;"><input id="switch-size" type="checkbox" checked data-size="mini" /></div>
+		</div>
+	  	<div class="row adv-search-hide">
+		    <div class="col-xs-2 row-txt">学时类别：</div>
+		    <div class="col-xs-2">
+		    	<select class="form-control" name="periodType">
+		    		<option value="">所有</option>
+		    		<option value="课外教学">课外教学</option>
+		    		<option value="课内教学">课内教学</option>
+		    	</select>
+		    </div>
+		    <div class="col-xs-2 row-txt">考核方式：</div>
+		    <div class="col-xs-2">
+		    	<select class="form-control" name="evaluationMode">
+		    		<option value="">所有</option>
+		    		<option value="考查">考查</option>
+		    		<option value="考试">考试</option>
+		    	</select>
+		    </div>
+		    <div class="col-xs-2 row-txt" >是否启用：</div>
+		    <div class="col-xs-2" style="padding-top:6px;"><input id="switch-size2" type="checkbox" checked data-size="mini" /></div>
+		</div>
+	  </div>
+	  </div>
+		<div style="height:420px;">
+		<h3><span id="courseType" class="label label-info"></span></h3>
+		<div class="row" style="padding:0px 20px 5px 20px;">
+			<div class="btn-group pull-right" role="group" aria-label="...">
+			  <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target=".bs-example-modal-lg"><span class="glyphicon glyphicon-plus"></span> 新增</button>
+			  <button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span> 批量删除</button>
+			  <button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-export"></span> 导出</button>
+			</div>
+		</div>
+		<table id="course-list" class="table table-bordered">
+			<thead>
+				<tr>
+					<th width="1%"><input type="checkbox"/></th>
+					<th width="3%">序号</th>
+					<th width="11%">开课单位</th>
+					<th width="9%">课程号</th>
+					<th width="7%">课程名称</th>
+					<th width="6%">课程大类</th>
+					<th width="6%">考核方式</th>
+					<!-- <th width="6%">学分</th> -->
+					<th width="6%">学时类别</th>
+					<th width="6%">课程分类</th>
+					<!-- <th width="6%">总学时</th>
+					<th width="6%">周学时</th>
+					<th width="6%">周数</th>
+					<th width="6%">课程版本</th> -->
+					<th width="5%">启用/在用</th>
+					<!-- <th width="4%">是否</th> -->
+					<th width="4%">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- <tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<div class="btn-group pull-right">
+						  <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" 
+						  		aria-haspopup="true" aria-expanded="false">
+						    <span class="glyphicon glyphicon-pencil"></span> <span class="caret"></span>
+						  </button>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">修改</a></li>
+						    <li><a href="#">学时设置</a></li>
+						    <li role="separator" class="divider"></li>
+						    <li><a href="#">删除</a></li>
+						  </ul>
+						</div>
+					</td>
+				</tr> -->
+			</tbody>
+		</table>
+		</div>
 </div>
 
+<!-- tooltips content -->
+<div id="tooltip_content" style="display:none;">
+	
+</div>
+<!-- tooltips content end -->
+
+<!-- modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">新增课程</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row row-txt">
+        	<input type="hidden" id="courseId"/>
+        	<div class="col-md-3"><span>*</span> 课程号：</div><div class="col-md-3"><input class="form-control" name="courseNum"/></div>
+        	<div class="col-md-2"><span>*</span> 课程名称：</div><div class="col-md-4"><input class="form-control" name="name"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3"><span>*</span> 开课单位：</div>
+        	<div class="col-md-3">
+        		<select id="courseunit" class="form-control" name="courceDepartmentID">
+        		</select>
+        	</div>
+        	<div class="col-md-2">英文名称：</div><div class="col-md-4"><input class="form-control" name="englishName"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3"><span>*</span> 是否启用：</div>
+        	<div class="col-md-1 pull-left" style="padding-top:6px;"><input id="switch-size3" name="enabled" type="checkbox" checked data-size="mini" /></div>
+        	<div class="col-md-2"></div>
+        	<div class="col-md-2"><span>*</span> 考核方式：</div>
+        	<div class="col-md-4">
+        		<select class="form-control" name="evaluationMode">
+        			<option value="考查">考查</option>
+        			<option value="考试">考试</option>
+        		</select>
+        	</div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3"><span>*</span> 是否全英/双英课：</div>
+        	<div class="col-md-1 pull-left" style="padding-top:6px;"><input id="switch-size4" name="fullEnglish" type="checkbox" checked data-size="mini" /></div>
+        	<div class="col-md-2"></div>
+        	<div class="col-md-2">总学时：</div>
+        	<div class="col-md-4"><input name="period_total" class="form-control"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">课程分类代码：</div>
+        	<div class="col-md-1 pull-left"><span class="label label-info" style="color:#fff;" id="courseTypeLabel">课程设计</span></div>
+        	<div class="col-md-2"></div>
+        	<div class="col-md-2"><span>*</span> 课程大类：</div>
+        	<div class="col-md-4">
+        		<select class="form-control" name="courseClass">
+        			<option value="公共必修课">公共必修课</option>
+		    		<option value="专业必修课">专业必修课</option>
+		    		<option value="公共选修课">公共选修课</option>
+		    		<option value="专业选修课">专业选修课</option>
+        		</select>
+        	</div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3"><span>*</span> 学时类别：</div>
+        	<div class="col-md-3">
+        		<select class="form-control" name="periodType">
+		    		<option value="课外教学">课外教学</option>
+		    		<option value="课内教学">课内教学</option>
+		    	</select>
+        	</div>
+        	<div class="col-md-2"><span>*</span> 学分：</div>
+        	<div class="col-md-4"><input class="form-control" name="credit"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3"><span>*</span> 周数：</div>
+        	<div class="col-md-3"><input class="form-control" name="week"/></div>
+        	<div class="col-md-2">周学时：</div>
+        	<div class="col-md-4"><input class="form-control" name="period_weekly"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">课程版本：</div>
+        	<div class="col-md-3"><input class="form-control" name="version"/></div>
+        	<div class="col-md-2">难易程度：</div>
+        	<div class="col-md-4"><input class="form-control" name="difficulty"/></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">是否指导性意见课程：</div>
+        	<div class="col-md-1 pull-left" style="padding-top:6px;"><input id="switch-size5" name="guiding" type="checkbox" checked data-size="mini" /></div>
+        	<div class="col-md-2"></div>
+        	<div class="col-md-2">是否学位课程：</div>
+        	<div class="col-md-1 pull-left" style="padding-top:6px;"><input id="switch-size6" name="degree" type="checkbox" checked data-size="mini" /></div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">课程简介：</div>
+        	<div class="col-md-9">
+        	<textarea class="form-control" rows="3" name="description"></textarea>
+        	</div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">参考书目：</div>
+        	<div class="col-md-9">
+        	<textarea class="form-control" rows="3" name="reference"></textarea>
+        	</div>
+        </div>
+        <div class="row row-txt">
+        	<div class="col-md-3">备注：</div>
+        	<div class="col-md-9">
+        	<textarea class="form-control" rows="3" name="remark"></textarea>
+        	</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="save-course">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade view-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">查看课程</h4>
+      </div>
+      <div class="modal-body">
+      	<table class="table table-bordered">
+			<tr>
+				<td style="width:25%">课程号：</td><td style="width:25%" id="courseNum-txt"></td>
+				<td style="width:20%">课程名称：</td><td style="width:30%" id="name-txt"></td>
+			</tr>
+			<tr>
+				<td>开课单位：</td><td id="courceDepartment-txt">法学院</td>
+				<td>英文名称：</td><td id="englishName-txt">xxxxx</td>
+			</tr>
+			<tr>
+				<td>是否启用：</td><td id="enabled-txt">是</td>
+				<td>考核方式：</td><td id="evaluationMode-txt">考查</td>
+			</tr>
+			<tr>
+				<td>是否全英/双英课：</td><td id="fullEnglish-txt">是</td><td>总学时：</td><td id="period_total-txt">123</td>
+			</tr>
+			<tr>
+				<td>课程分类代码：</td><td><span class="label label-info" style="color:#fff;" id="courceTypeId-txt"></span></td>
+				<td>课程大类：</td><td id="courseClass-txt">公共必修课</td>
+			</tr>
+			<tr>
+				<td>学时类别：</td><td id="periodType-txt">课外教学</td><td>学分：</td><td id="credit-txt">100</td>
+			</tr>
+			<tr>
+				<td>周数：</td><td id="week-txt">12</td><td>周学时：</td><td id="period_weekly-txt">10</td>
+			</tr>
+			<tr>
+				<td>课程版本：</td><td id="version-txt">12</td><td>难易程度：</td><td id="difficulty-txt">5</td>
+			</tr>
+			<tr>
+				<td>是否指导性意见课程：</td><td id="guiding-txt">是</td><td>是否学位课程：</td><td id="degree-txt">是</td>
+			</tr>
+			<tr>
+				<td>课程简介：</td><td colspan="3" id="description-txt">课程简介</td>
+			</tr>
+			<tr>
+				<td>参考书目：</td><td colspan="3" id="reference-txt">参考书目</td>
+			</tr>
+			<tr>
+				<td>备注：</td><td colspan="3" id="remark-txt">备注</td>
+			</tr>
+		</table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">确认删除</h4>
+      </div>
+      <div class="modal-body">
+      	确认删除？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="ok-del">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal end -->
+
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/global.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="bootstrap/table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="bootstrap/switch/js/bootstrap-switch.min.js"></script>
+<script type="text/javascript" src="components/ztree/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="components/ztree/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="components/ztree/jquery.ztree.exedit.min.js"></script>
+<script type="text/javascript" src="components/tooltipster/js/tooltipster.bundle.min.js"></script>
+<script type="text/javascript" src="index.js"></script>
+<script type="text/javascript">
+var courceTypeId;
+var courseList = {};
+var _query = {};
+var delCourseId;
+$(document).ready(function(){
+	var treeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+	var defaultNode = treeObj.getNodes()[0].children[0];
+	treeObj.selectNode(defaultNode);
+	$('#courseType').html(defaultNode.name);
+	courceTypeId = defaultNode.name;
+	$('#courseTypeLabel').html(courceTypeId);
+	
+	
+	$('#switch-size').bootstrapSwitch();
+	$('#switch-size2').bootstrapSwitch();
+	$('#switch-size3').bootstrapSwitch();
+	$('#switch-size4').bootstrapSwitch();
+	$('#switch-size5').bootstrapSwitch();
+	$('#switch-size6').bootstrapSwitch();
+	
+	//console.log($('#switch-size3').bootstrapSwitch('state'));
+	
+	$.each($('#tooltip_content table tr td'),function(i,o){
+		if(i%2==0){
+			$(this).css('text-align','right');
+			$(this).css('background-color','#fcfcfc');
+		}
+	});
+	
+	$('#adv-search').click(function(){
+		if($(this).attr('title') == '高级搜索'){
+			var _search = $('.adv-search-hide');
+			_search.removeClass('adv-search-hide');
+			_search.addClass('adv-search-show');
+			$(this).attr('title','隐藏高级搜索');
+			$(this).children('span').removeClass('glyphicon-menu-down');
+			$(this).children('span').addClass('glyphicon-menu-up');
+		} else {
+			var _search = $('.adv-search-show');
+			_search.removeClass('adv-search-show');
+			_search.addClass('adv-search-hide');
+			$(this).attr('title','高级搜索');
+			$(this).children('span').addClass('glyphicon-menu-down');
+			$(this).children('span').removeClass('glyphicon-menu-up');
+		}
+	});
+	
+	$('#ok-del').click(function(){
+		if(delCourseId){
+			$.ajax({
+				url:'/course/course/'+delCourseId,
+				type:'delete',
+				success:function(result){
+					if(result.code==200){
+						$('.bs-example-modal-sm').modal('hide');
+						doQuery(_query);
+					}
+				}
+			});
+		} else {
+			alert('no selected id');
+		}
+	});
+	
+	$('#searchBtn').click(function(){
+		$.each($('.search-body .form-control'),function(i,o){
+			_query[$(o).attr('name')] = $(o).val();
+		});
+		//_query['enabled']=$('#switch-size').bootstrapSwitch('state')?1:0;
+		doQuery(_query);
+	});
+	
+	
+	if(IS_LOGIN){
+		_query['courceTypeId'] = courceTypeId;
+		doQuery(_query);
+		
+		$.ajax({
+			url:'/courseunit/list',
+			success:function(result){
+				//console.log(result);
+				$('#scourseunit').append('<option value="">所有单位</option>');
+				$.each(result.data,function(i,o){
+					$('#courseunit').append('<option value="' + o.collegecode + '">' + o.collegename + '</option>');
+					$('#scourseunit').append('<option value="' + o.collegecode + '">' + o.collegename + '</option>');
+				});
+			}
+		});
+		
+		$('#save-course').click(function(){
+			var course = {};
+			$.each($('.bs-example-modal-lg .form-control'),function(i,o){
+				course[$(o).attr('name')] = $(o).val();
+			});
+			course[$('#switch-size3').attr('name')] = $('#switch-size3').bootstrapSwitch('state');
+			course[$('#switch-size4').attr('name')] = $('#switch-size4').bootstrapSwitch('state');
+			course[$('#switch-size5').attr('name')] = $('#switch-size5').bootstrapSwitch('state');
+			course[$('#switch-size6').attr('name')] = $('#switch-size6').bootstrapSwitch('state');
+			var type = 'post';
+			if($('#courseId').val()){
+				course.id = $('#courseId').val();
+				type = 'put';
+			}
+			course.courceTypeId = courceTypeId;
+			
+			$.ajax({
+				url:'/course/course',
+				method:type,
+				data:course,
+				success:function(result){
+					$('.bs-example-modal-lg').modal('hide');
+					doQuery(_query);
+				}
+			});
+		});
+		
+		$('.bs-example-modal-lg').on('shown.bs.modal', function(e){
+			//console.log($(e.relatedTarget));
+			var _btnType = $(e.relatedTarget).text()
+			//console.log(_btnType);
+			if(_btnType=='修改'){
+				var obj = courseList[$(e.relatedTarget).attr('data-id')];
+				$('#courseId').val(obj.id);
+				$.each($('.bs-example-modal-lg .form-control'),function(i,o){
+					var cn = $(o).attr('name');
+					$(o).val(obj[cn]);
+				});
+				var f1 = obj[$('#switch-size3').attr('name')];
+				$('#switch-size3').bootstrapSwitch('state', f1);
+				var f2 = obj[$('#switch-size4').attr('name')];
+				$('#switch-size4').bootstrapSwitch('state', f2);
+				var f3 = obj[$('#switch-size5').attr('name')];
+				$('#switch-size5').bootstrapSwitch('state', f3);
+				var f4 = obj[$('#switch-size6').attr('name')];
+				$('#switch-size6').bootstrapSwitch('state', f4);
+				$('#myModalLabel').html('修改课程');
+			} else {
+				$('#courseId').val('');
+				$('#myModalLabel').html('新增课程');
+				$('.form-control').val('');
+				$('#switch-size3').bootstrapSwitch('state', true);
+				$('#switch-size4').bootstrapSwitch('state', true);
+				$('#switch-size5').bootstrapSwitch('state', true);
+				$('#switch-size6').bootstrapSwitch('state', true);
+			}
+		});
+		
+		$('.view-modal-lg').on('shown.bs.modal', function(e){
+			var _clicko = $(e.relatedTarget);
+			//console.log(_clicko.attr('cid'));
+	    	var obj = courseList[_clicko.attr('cid')];
+	    	//console.log(obj);
+	    	$.each(obj,function(i,o){
+	    		var _txt = o;
+	    		if(i=='degree' || i=='enabled' || i=='fullEnglish' || i=='guiding'){
+	    			_txt = o?"是":"否";
+	    		}
+	    		$('#'+i+'-txt').html(_txt);
+    		});
+		});
+		
+		$('.bs-example-modal-sm').on('shown.bs.modal', function(e){
+			var _clicko = $(e.relatedTarget);
+			//console.log(_clicko.attr('cid'));
+			delCourseId = _clicko.attr('cid');
+			//console.log(delCourseId);
+		});
+	}
+	
+});
+
+function doQuery(_query){
+	$.ajax({
+		url:'/course/course/search',
+		data:_query,
+		success:function(result){
+			$('#course-list tbody').empty();
+			//console.log(result);
+			if(result.data && result.data.length>0){
+				$.each(result.data,function(i,o){
+					courseList[o.id] = o;
+					$('#course-list tbody').append(
+						'<tr>' +
+							'<td><input type="checkbox" name="id" value="' + o.id + '"/></td>' +
+							'<td>' + (i + 1) + '</td>' + 
+							'<td>' + 
+								'<span class="tooltip2" data-tooltip-content="#tooltip_content">' + 
+								o.courceDepartment + '</span></td>' + 
+							'<td>' + o.courseNum + '</td>' + 
+							'<td><a href="#" data-toggle="modal" data-target=".view-modal-lg" cid="' + o.id +'">' + o.name + '</a></td>' + 
+							'<td>' + o.courseClass + '</td>' + 
+							'<td>' + o.evaluationMode + '</td>' + 
+							'<td>' + o.courceTypeId + '</td>' + 
+							'<td>' + o.periodType + '</td>' + 
+							'<td>' + (o.enabled?'是':'否') + '</td>' + 
+							'<td>' + 
+								'<div class="btn-group pull-right">' +
+								  '<button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" ' +
+								  		'aria-haspopup="true" aria-expanded="false">' +
+								    '<span class="glyphicon glyphicon-pencil"></span> <span class="caret"></span>' +
+								  '</button>' +
+								  '<ul class="dropdown-menu">' +
+								    '<li><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg" data-id="' + o.id + '">修改</a></li>' +
+								    '<li><a href="#">学时设置</a></li>' +
+								    '<li role="separator" class="divider"></li>' +
+								    '<li><a href="#" data-toggle="modal" data-target=".bs-example-modal-sm" cid="' + o.id +'">删除</a></li>' +
+								  '</ul>' +
+								'</div>' +
+							'</td>' + 
+						'</tr>'
+					);
+				});
+
+				/**
+				$('.tooltip2').tooltipster({
+				    theme: 'tooltipster-shadow',
+				    side:'right',
+				    interactive:true,
+				    trigger: 'click',
+				    //content:'Loading...',
+				    functionBefore: function(instance, helper) {
+				    	//console.log(instance,helper);
+				    	//$.get('/course/course/')
+				    	var $origin = $(helper.origin);
+				    	var obj = courseList[$origin.attr('cid')];
+				    	//console.log(obj);
+				    	$.each(obj,function(i,o){
+				    		var _txt = o;
+				    		if(i=='degree' || i=='enabled' || i=='fullEnglish' || i=='guiding'){
+				    			_txt = o?"是":"否";
+				    		}
+				    		$('#'+i+'-txt').html(_txt);
+			    		});
+				    	$('#tooltip_content').show();
+				    }
+				});
+				*/
+			}
+		}
+	});
+}
+
+</script>
 </body>
 </html>

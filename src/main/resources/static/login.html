@@ -9,21 +9,26 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#loginBtn').click(function(){
+		//window.location.href = "index.html";
 		$.ajax({
-			url:'/passport/login/findBy_username_passwd',
-			dataType:'json',
-			data:{"username":$('#name').val(),"passwd":$('#password').val()},
-			success:function(result){
-				if(result.code==200){
-					window.location.href="/index.html"
-				}
-			}
+		 	url:'/passport/login/findBy_username_passwd',
+		 	dataType:'json',
+		 	data:{"username":$('#name').val(),"passwd":$('#password').val()},
+		 	success:function(result){
+		 		if(result.code==200){
+		 			window.location.href="/index.html"
+		 		} else if(result.code==400){
+		 			$('#error-msg').html(result.message)
+		 			$('#error-msg').show();
+		 		}
+		 	}
 		});
 	});
 });
 </script>
 </head>
 <body>
+<div id="error-msg" class="alert alert-danger" role="alert" style="display:none;"></div>
 <br/><br/><br/><br/>
 <div class="panel panel-primary" style="width:500px;margin:0 auto;">
 	<div class="panel-heading">用户登录</div>
@@ -35,7 +40,7 @@ $(document).ready(function(){
 			</div>
 			<div class="input-group" style="margin-bottom: 25px">
 			  <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
-			  <input type="text" class="form-control" id="password" placeholder="请输入密码">
+			  <input type="password" class="form-control" id="password" placeholder="请输入密码">
 			</div>
 			<div class="col-sm-12 controls">
 		      <a id="loginBtn" href="javascript:void(0);" class="btn btn-success">Login  </a>
