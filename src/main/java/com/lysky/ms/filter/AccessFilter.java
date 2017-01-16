@@ -1,4 +1,4 @@
-package com.ocs.ms.filter;
+package com.lysky.ms.filter;
 
 import java.util.List;
 
@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.lysky.ms.components.RoutesConfig;
+import com.lysky.ms.json.ResultCode;
+import com.lysky.ms.security.LoginManager;
+import com.lysky.ms.security.UserSession;
+import com.lysky.ms.utils.Assert;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.ocs.ms.components.RoutesConfig;
-import com.ocs.ms.json.ResultCode;
-import com.ocs.ms.security.LoginManager;
-import com.ocs.ms.security.UserSession;
-import com.ocs.ms.utils.Assert;
 
 @Component
 public class AccessFilter extends ZuulFilter{

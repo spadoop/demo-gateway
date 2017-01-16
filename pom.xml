@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.ocs.microserver.parent</groupId>
+		<groupId>com.lysky.microserver.parent</groupId>
 		<artifactId>demo-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
@@ -35,7 +35,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-	        <groupId>com.ocs.microserver.parent</groupId>
+	        <groupId>com.lysky.microserver.parent</groupId>
 	        <artifactId>core</artifactId>
 	        <version>${core-version}</version>
 	    </dependency>
@@ -52,7 +52,28 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<configuration>
+						<mainClass>com.lysky.ms.ApiGatewayApplication</mainClass>
+					</configuration>
+			</plugin>
+			
+			<plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
+		
 	</build>
 
 </project>

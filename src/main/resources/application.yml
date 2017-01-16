@@ -2,18 +2,17 @@ zuul :
   routes : 
     passport : 
       path : /passport/**
-      #url : http://192.168.1.249:9091
-      url : http://127.0.0.1:8088
+      url : http://localhost:8088/
       sensitiveHeaders: 
     courseunit : 
       path : /courseunit/**
       #url : http://192.168.1.249:9099
-      url : http://192.168.1.250
+      url : http://localhost:9099/unit
       sensitiveHeaders: 
     course : 
       path : /course/**
       #url : http://10.108.25.163
-      url : http://192.168.1.130:9090
+      url : http://localhost:9090/
       sensitiveHeaders: 
     words : 
       path : /words/**
